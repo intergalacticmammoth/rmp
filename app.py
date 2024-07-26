@@ -25,12 +25,6 @@ def detect_shifts(monthly_schedule, employee_name):
         for date, shift_code in employee_row.iloc[2:].items()
         if pd.notna(shift_code) and shift_code != "0"
     ]
-    # Exclude N and -DF shift codes
-    shifts = [
-        (date, shift_code)
-        for date, shift_code in shifts
-        if not shift_code.startswith("N") and not shift_code.endswith("DF")
-    ]
     return shifts
 
 
@@ -85,7 +79,21 @@ if uploaded_file is not None:
     )
 
     if selected_employee:
-        shifts = detect_shifts(monthly_schedule, selected_employee)
+        all_shifts = detect_shifts(monthly_schedule, selected_employee)
+
+        # Get unique shift codes
+        unique_shift_codes = list(set([shift[1] for shift in all_shifts]))
+
+        # Multiselect for shift codes
+        st.subheader("Select Shift Codes")
+        selected_shift_codes = st.multiselect(
+            "Choose which shift codes to include",
+            options=unique_shift_codes,
+            default=unique_shift_codes,
+        )
+
+        # Filter shifts based on selected shift codes
+        shifts = [shift for shift in all_shifts if shift[1] in selected_shift_codes]
 
         st.markdown("---")
         st.subheader("Here's Your Schedule")
@@ -103,7 +111,7 @@ if uploaded_file is not None:
                 mime="text/calendar",
             )
         else:
-            st.info("No shifts found for this employee.")
+            st.info("No shifts found for the selected shift codes.")
     else:
         st.info("Please select an employee from the dropdown menu.")
 else:
