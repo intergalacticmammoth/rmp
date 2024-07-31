@@ -99,5 +99,5 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("Created with ❤️ by Your Friendly Big Tech Engineer")
+st.markdown("Created with ❤️ by Your Friendly Engineer")
 st.caption("v.0.1.2")
