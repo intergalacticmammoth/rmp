@@ -43,17 +43,8 @@ def create_ics_file(shifts, employee_name, definitions):
     for date, shift_code in shifts:
         event = Event()
         event.add("summary", f"Shift: {shift_code}")
-        start_time, end_time = get_shift_times(shift_code, definitions)
-        start_datetime = datetime.combine(
-            date.date(), datetime.strptime(start_time, "%H:%M").time()
-        )
-        end_datetime = datetime.combine(
-            date.date(), datetime.strptime(end_time, "%H:%M").time()
-        )
-        if end_datetime <= start_datetime:
-            end_datetime += timedelta(days=1)
-        event.add("dtstart", start_datetime)
-        event.add("dtend", end_datetime)
+        event.add("dtstart", date)
+        event.add("dtend", date)
         event.add("dtstamp", datetime.now(tz=pytz.UTC))
         event.add("location", "Hospital")
         cal.add_component(event)
