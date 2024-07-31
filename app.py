@@ -28,24 +28,13 @@ def detect_shifts(monthly_schedule, employee_name):
     return shifts
 
 
-def get_shift_times(shift_code, definitions):
-    shift_def = definitions[
-        definitions["PersOff"].str.contains(shift_code, na=False, regex=False)
-    ]
-    if not shift_def.empty and pd.notna(shift_def["Werktag"].iloc[0]):
-        start_time, end_time = shift_def["Werktag"].iloc[0].split("-")
-        return start_time.strip(), end_time.strip()
-    return "00:00", "23:59"  # Default to full day if not found
-
-
 def create_ics_file(shifts, employee_name, definitions):
     cal = Calendar()
     for date, shift_code in shifts:
         event = Event()
         event.add("summary", f"Shift: {shift_code}")
-        event.add("dtstart", date)
-        event.add("dtend", date)
-        event.add("dtstamp", datetime.now(tz=pytz.UTC))
+        event.add("dtstart", date.date())
+        event.add("dtend", date.date() + timedelta(days=1))
         event.add("location", "Hospital")
         cal.add_component(event)
     return cal.to_ical()
@@ -111,3 +100,4 @@ else:
 # Footer
 st.markdown("---")
 st.markdown("Created with ❤️ by Your Friendly Big Tech Engineer")
+st.caption("v.0.1.2")
